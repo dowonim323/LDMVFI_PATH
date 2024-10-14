@@ -32,20 +32,20 @@ data:
   target: main.DataModuleFromConfig
   params:
     batch_size: 10
-    num_workers: 0
+    num_workers: 10
     wrap: false
     train:
-      target: ldm.data.bvi_vimeo.BVI_Vimeo_triplet
+      target: ldm.data.otls.otls_train_triplet
       params:
-        db_dir: C:/data_tmp/
-        crop_sz: [256,256]
+        db_dir: '/home/shared/image/PKG - PCa_Bx_3Dpathology/c001_a'
+        crop_sz: [224,224]
         iter: True
     validation:
-      target: ldm.data.bvi_vimeo.Vimeo90k_triplet
+      target: ldm.data.otls.otls_triplet
       params:
-        db_dir: C:/data_tmp/vimeo_septuplet/
+        db_dir: '/home/shared/image/PKG - PCa_Bx_3Dpathology/c001_b'
         train: False
-        crop_sz: [256,256]
+        crop_sz: [224,224]
         augment_s: False
         augment_t: False
 

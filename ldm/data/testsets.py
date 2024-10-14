@@ -12,6 +12,7 @@ import numpy as np
 import ast
 import time
 from ldm.models.autoencoder import * 
+from torchvision.transforms import ToPILImage
 
 
 class TripletTestSet:
@@ -76,6 +77,76 @@ class TripletTestSet:
         print(msg, end='')
         logfile.write(msg)
         logfile.close()
+
+class c001_a(TripletTestSet):
+    def __init__(self, db_dir):
+        super(c001_a, self).__init__()
+        
+        slice_idx_start = 5200  # 첫 번째 축에서 선택할 슬라이스 시작 인덱스
+        slice_idx_end = 5200  # 첫 번째 축에서 선택할 슬라이스 끝 인덱스
+        step_size = 20  # 슬라이스 간격
+
+        # 확대할 영역의 크기 정의
+        window_size = 224
+
+        # 확대할 영역의 중심 좌표 선택
+        x_index_start = 200
+        x_index_end = 800
+        x_step_size = 50
+
+        y_index_start = 200
+        y_index_end = 500
+        y_step_size = 50
+        
+        self.im_list = []
+        self.input0_list = []
+        self.input1_list = []
+        self.gt_list = []
+        
+        pseudo_colored_tensor = torch.load(os.path.join(db_dir, 'false_color.pt'))
+
+        for slice_idx in range(slice_idx_start, slice_idx_end + 1):
+            for x_index in range(x_index_start, x_index_end + 1, x_step_size):
+                for y_index in range(y_index_start, y_index_end + 1, y_step_size):
+                    self.im_list.append(f"{slice_idx}_{x_index}_{y_index}_{step_size}")
+                    self.input0_list.append(self.transform(ToPILImage()(pseudo_colored_tensor[slice_idx, y_index-window_size//2:y_index+window_size//2, x_index-window_size//2:x_index+window_size//2, :].permute(2, 0, 1))).cuda().unsqueeze(0))
+                    self.gt_list.append(self.transform(ToPILImage()(pseudo_colored_tensor[slice_idx+step_size, y_index-window_size//2:y_index+window_size//2, x_index-window_size//2:x_index+window_size//2, :].permute(2, 0, 1))).cuda().unsqueeze(0))
+                    self.input1_list.append(self.transform(ToPILImage()(pseudo_colored_tensor[slice_idx+2*step_size, y_index-window_size//2:y_index+window_size//2, x_index-window_size//2:x_index+window_size//2, :].permute(2, 0, 1))).cuda().unsqueeze(0))
+ 
+class c001_c(TripletTestSet):
+    def __init__(self, db_dir):
+        super(c001_c, self).__init__()
+        
+        slice_idx_start = 5200  # 첫 번째 축에서 선택할 슬라이스 시작 인덱스
+        slice_idx_end = 5200  # 첫 번째 축에서 선택할 슬라이스 끝 인덱스
+        step_size = 20  # 슬라이스 간격
+
+        # 확대할 영역의 크기 정의
+        window_size = 224
+
+        # 확대할 영역의 중심 좌표 선택
+        x_index_start = 200
+        x_index_end = 800
+        x_step_size = 50
+
+        y_index_start = 200
+        y_index_end = 500
+        y_step_size = 50
+        
+        self.im_list = []
+        self.input0_list = []
+        self.input1_list = []
+        self.gt_list = []
+        
+        pseudo_colored_tensor = torch.load(os.path.join(db_dir, 'false_color.pt'))
+
+        for slice_idx in range(slice_idx_start, slice_idx_end + 1):
+            for x_index in range(x_index_start, x_index_end + 1, x_step_size):
+                for y_index in range(y_index_start, y_index_end + 1, y_step_size):
+                    self.im_list.append(f"{slice_idx}_{x_index}_{y_index}_{step_size}")
+                    self.input0_list.append(self.transform(ToPILImage()(pseudo_colored_tensor[slice_idx, y_index-window_size//2:y_index+window_size//2, x_index-window_size//2:x_index+window_size//2, :].permute(2, 0, 1))).cuda().unsqueeze(0))
+                    self.gt_list.append(self.transform(ToPILImage()(pseudo_colored_tensor[slice_idx+step_size, y_index-window_size//2:y_index+window_size//2, x_index-window_size//2:x_index+window_size//2, :].permute(2, 0, 1))).cuda().unsqueeze(0))
+                    self.input1_list.append(self.transform(ToPILImage()(pseudo_colored_tensor[slice_idx+2*step_size, y_index-window_size//2:y_index+window_size//2, x_index-window_size//2:x_index+window_size//2, :].permute(2, 0, 1))).cuda().unsqueeze(0))
 
 class Middlebury_others(TripletTestSet):
     def __init__(self, db_dir):

@@ -115,6 +115,7 @@ class VQFlowNet(pl.LightningModule):
         # 2**(nr-1): f 
         # 4: factor of downsampling in DDPM unet
         min_side = 8 * 2**(self.encoder.num_resolutions-1) * 4
+        min_side = min_side // 2 if self.h0 <= 256 else min_side
         if self.h0 % min_side != 0:
             pad_h = min_side - (self.h0 % min_side)
             if pad_h == self.h0: # this is to avoid padding 256 patches
